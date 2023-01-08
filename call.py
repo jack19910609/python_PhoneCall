@@ -4,7 +4,7 @@ from twilio.twiml.voice_response import VoiceResponse, Say
 from random import randrange
 from colorama import Fore,Style,Back
 from time import sleep 
-from threading import Thread
+import threading 
 import pygsheets
 import time
 import datetime
@@ -40,31 +40,28 @@ def main():
         timeFormat = '{}/{}/{} {}'.format(NowTime.year,NowTime.month,NowTime.day,time.strftime('%X'))
 
         if(timeFormat >= TargetPhoneData.enable_Time) :   
-            t1 = Thread(target=Listen_User_Stop)
+            t1 = threading.Thread(target=Listen_User_Stop)
+            t2 = threading.Thread(target=Call_thread, args=(To_input,))
+            t3 = threading.Timer(3,Call_thread, args=(To_input,))
             t1.start()
-            t2 = Thread(target=Call_thread(To_input))
             t2.start()
-
-            t1.join()
-            t2.join()
+            t3.start()
         else:
             print('Not Calling Now...')
     else:
         print('Not match Phone...')
     
-
 def Call_thread(To_input):   
     if isCalling :
         print('start to call ' + To_input + '...')
         
     while isCalling:
         Call(To_input)
-        sleep(9.5) 
+        sleep(9) 
 
 def Listen_User_Stop():
     while True:
         global isCalling
-        
         NowTime = datetime.datetime.now()
         timeFormat = '{}/{}/{} {}'.format(NowTime.year,NowTime.month,NowTime.day,time.strftime('%X'))
         if (timeFormat >= TargetPhoneData.expire_Time) :
@@ -138,6 +135,6 @@ def welcome():
 """
 
 	print(wel)
-    
+
 if __name__ == '__main__':
 	main()
