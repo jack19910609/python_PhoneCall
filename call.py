@@ -36,18 +36,20 @@ def main():
 
     #loop call
     if(checkPhoneInSheet(To_input)):
-        NowTime = datetime.datetime.now()
-        timeFormat = '{}/{}/{} {}'.format(NowTime.year,NowTime.month,NowTime.day,time.strftime('%X'))
+        TimeFormat = '{}/{}/{} {}'.format(datetime.datetime.now().year,datetime.datetime.now().month,datetime.datetime.now().day,time.strftime('%X'))
+        EnableTimeToDateTime = datetime.datetime.strptime(TargetPhoneData.enable_Time, '%Y/%m/%d %H:%M:%S')
+        TimeFormatToDateTime = datetime.datetime.strptime(TimeFormat, '%Y/%m/%d %H:%M:%S')
 
-        if(timeFormat >= TargetPhoneData.enable_Time) :   
+        if(TimeFormatToDateTime >= EnableTimeToDateTime) :     
             t1 = threading.Thread(target=Listen_User_Stop)
             t2 = threading.Thread(target=Call_thread, args=(To_input,))
-            t3 = threading.Timer(3,Call_thread, args=(To_input,))
+            t3 = threading.Timer(5,Call_thread, args=(To_input,))
             t1.start()
             t2.start()
             t3.start()
         else:
             print('Not Calling Now...')
+
     else:
         print('Not match Phone...')
     
@@ -62,9 +64,11 @@ def Call_thread(To_input):
 def Listen_User_Stop():
     while True:
         global isCalling
-        NowTime = datetime.datetime.now()
-        timeFormat = '{}/{}/{} {}'.format(NowTime.year,NowTime.month,NowTime.day,time.strftime('%X'))
-        if (timeFormat >= TargetPhoneData.expire_Time) :
+        TimeFormat = '{}/{}/{} {}'.format(datetime.datetime.now().year,datetime.datetime.now().month,datetime.datetime.now().day,time.strftime('%X'))
+        ExpireTimeToDateTime = datetime.datetime.strptime(TargetPhoneData.expire_Time, '%Y/%m/%d %H:%M:%S')
+        TimeFormatToDateTime = datetime.datetime.strptime(TimeFormat, '%Y/%m/%d %H:%M:%S')
+
+        if (TimeFormatToDateTime >= ExpireTimeToDateTime) :
             isCalling = False
             print('Is PhoneCalling Expire...')
             break
