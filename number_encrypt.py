@@ -42,7 +42,7 @@ def welcome():
         +==========================================+
         |............   Encrypt Tool   ............|
         +------------------------------------------+
-        |             #Author: Jimmy               | 
+        |             #Author: Anonymous               | 
         |	       Version 1.0                 |
         |                                          |
         |              Encrypt String              |

@@ -19,8 +19,8 @@ enable_Time_cols = []
 expire_Time_cols = []
 
 class selfPhoneData:
-    def __init__(self, phoneNumber , enable_Time , expire_Time):
-        self.phoneNumber = phoneNumber
+    def __init__(self, code , enable_Time , expire_Time):
+        self.phoneNumber = code
         self.enable_Time = enable_Time
         self.expire_Time = expire_Time
 
@@ -75,14 +75,14 @@ def Listen_User_Stop():
             break
         
 def GetSheet():
-    global phone_cols
+    global code_cols
     global enable_Time_cols
     global expire_Time_cols
     
     gc = pygsheets.authorize(service_file=os.getenv('PYGSHEETS_SERVICE_FILE_PATH'))
     sht = gc.open_by_url(os.getenv('PYGSHEETS_OPEN_URL'))
     wks = sht.worksheet_by_title("Phone")
-    phone_cols = wks.get_col(1,returnas='cell' , include_tailing_empty=False)
+    code_cols = wks.get_col(1,returnas='cell' , include_tailing_empty=False)
     enable_Time_cols = wks.get_col(2,returnas='cell' , include_tailing_empty=False)
     expire_Time_cols = wks.get_col(4,returnas='cell' , include_tailing_empty=False)
 
@@ -100,15 +100,16 @@ def checkPhoneInSheet(To_input):
     global TargetPhoneData
 
     stringTobinery = text_to_bits(To_input)
-    flipbinery = addBinary(stringTobinery)
+    flipbinery = addbinary(stringTobinery)
     flipstring= text_from_bits(flipbinery)
     
-    for i in range(1 , len(phone_cols)):
-        if(flipstring == phone_cols[i].value):
-            TargetPhoneData = selfPhoneData(phone_cols[i].value ,enable_Time_cols[i].value  ,expire_Time_cols[i].value )
+    for i in range(1 , len(code_cols)):
+        if(flipstring == code_cols[i].value):
+            TargetPhoneData = selfPhoneData(code_cols[i].value ,enable_Time_cols[i].value  ,expire_Time_cols[i].value )
             return True
 
     return False
+
 def text_to_bits(text, encoding='utf-8', errors='surrogatepass'):
     bits = bin(int.from_bytes(text.encode(encoding, errors), 'big'))[2:]
     return bits.zfill(8 * ((len(bits) + 7) // 8))
@@ -117,8 +118,11 @@ def text_from_bits(bits, encoding='utf-8', errors='surrogatepass'):
     n = int(bits, 2)
     return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode(encoding, errors) or '\0'
 
-def addBinary(binary):
-    return bin(int(binary, 2) + int("00100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010", 2))[2:]
+def addbinary(binary):
+    f = open('secert.txt' , 'r')
+    addedbinary = bin(int(binary, 2) + int(f.read(), 2))[2:]
+    f.close()
+    return addedbinary
 
 def Call(TargetPhone):
     client = TwilioInit()
@@ -143,7 +147,7 @@ def welcome():
         +==========================================+
         |..........   Crazy PhoneCall   ...........|
         +------------------------------------------+
-        |             #Author: Jimmy               | 
+        |             #Author: Anonymous               | 
         |	       Version 1.0                 |
         |                                          |
         |          You can call everyone           |
