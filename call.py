@@ -9,6 +9,7 @@ import pygsheets
 import time
 import datetime
 import os
+import binascii
 
 
 isCalling = True
@@ -97,13 +98,27 @@ def colormaInit():
 
 def checkPhoneInSheet(To_input):
     global TargetPhoneData
+
+    stringTobinery = text_to_bits(To_input)
+    flipbinery = addBinary(stringTobinery)
+    flipstring= text_from_bits(flipbinery)
     
     for i in range(1 , len(phone_cols)):
-        if(To_input == phone_cols[i].value):
+        if(flipstring == phone_cols[i].value):
             TargetPhoneData = selfPhoneData(phone_cols[i].value ,enable_Time_cols[i].value  ,expire_Time_cols[i].value )
             return True
 
     return False
+def text_to_bits(text, encoding='utf-8', errors='surrogatepass'):
+    bits = bin(int.from_bytes(text.encode(encoding, errors), 'big'))[2:]
+    return bits.zfill(8 * ((len(bits) + 7) // 8))
+
+def text_from_bits(bits, encoding='utf-8', errors='surrogatepass'):
+    n = int(bits, 2)
+    return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode(encoding, errors) or '\0'
+
+def addBinary(binary):
+    return bin(int(binary, 2) + int("00100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010", 2))[2:]
 
 def Call(TargetPhone):
     client = TwilioInit()
